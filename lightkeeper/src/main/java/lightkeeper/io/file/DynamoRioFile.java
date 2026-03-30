@@ -20,7 +20,7 @@ import lightkeeper.io.module.ModuleEntry;
 import lightkeeper.io.module.ModuleReader;
 
 public class DynamoRioFile implements IEventListener {
-	protected final String HEADER = "DRCOV VERSION: 2";
+	protected final Pattern HEADER_REGEX = Pattern.compile("^DRCOV VERSION: (?<version>[23])$");
 	protected final Pattern FLAVOUR_REGEX = Pattern.compile("^DRCOV FLAVOR: (?<flavour>.*)$");
 	protected final Pattern TABLE_REGEX = Pattern
 			.compile("^Module Table: (version (?<version>\\d+), count )?(?<count>\\d+)$");
@@ -31,6 +31,7 @@ public class DynamoRioFile implements IEventListener {
 	protected File file;
 
 	protected String flavour;
+	protected int fileVersion;
 	protected int tableVersion;
 	protected int tableCount;
 	protected ArrayList<ModuleEntry> modules = new ArrayList<>();
@@ -78,9 +79,12 @@ public class DynamoRioFile implements IEventListener {
 		monitor.setMessage("Reading header");
 		var headerLine = reader.readLine();
 		addMessage(headerLine);
-		if (!headerLine.equals(HEADER)) {
-			throw new IOException(String.format("Invalid header: '%s' expected '%s'", headerLine, HEADER));
+		var headerMatcher = HEADER_REGEX.matcher(headerLine);
+		if (!headerMatcher.matches()) {
+			throw new IOException(String.format("Invalid header: '%s'", headerLine));
 		}
+		fileVersion = Integer.parseInt(headerMatcher.group("version"));
+		addMessage(String.format("Detected file version: %d", fileVersion));
 		monitor.checkCancelled();
 	}
 

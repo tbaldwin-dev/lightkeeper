@@ -5,6 +5,7 @@ import java.util.List;
 import docking.widgets.table.AbstractSortedTableModel;
 import docking.widgets.table.ColumnSortState.SortDirection;
 import docking.widgets.table.TableSortStateEditor;
+import ghidra.util.Swing;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import lightkeeper.model.ICoverageModelListener;
@@ -70,6 +71,6 @@ public class CoverageTable extends AbstractSortedTableModel<CoverageTableRow> im
 
 	@Override
 	public void modelChanged(TaskMonitor monitor) throws CancelledException {
-		fireTableDataChanged();
+		Swing.runLater(() -> fireTableDataChanged());
 	}
 }

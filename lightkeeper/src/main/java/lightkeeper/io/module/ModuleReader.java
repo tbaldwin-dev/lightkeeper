@@ -22,17 +22,28 @@ public class ModuleReader {
 			"^\\s*(?<id>\\d+), (0x)?(?<start>[0-9a-fA-F]+), (0x)?(?<end>[0-9a-fA-F]+), (0x)?(?<entry>[0-9a-fA-F]+), (?<path>.+)$");
 
 	protected final String COLUMN_3_HDR_WIN = "Columns: id, containing_id, start, end, entry, checksum, timestamp, path";
-	protected final Pattern COLUMN_3_HDR_WIN_FMT = null;
+	protected final Pattern COLUMN_3_HDR_WIN_FMT = Pattern.compile(
+			"^\\s*(?<id>\\d+), \\s*(?<containingid>\\d+), (0x)?(?<start>[0-9a-fA-F]+), (0x)?(?<end>[0-9a-fA-F]+), (0x)?(?<entry>[0-9a-fA-F]+), (0x)?(?<checksum>[0-9a-fA-F]+), (0x)?(?<timestamp>[0-9a-fA-F]+), (?<path>.+)$");
 
 	protected final String COLUMN_3_HDR_LINUX = "Columns: id, containing_id, start, end, entry, path";
-	protected final Pattern COLUMN_3_HDR_LINUX_FMT = null;
+	protected final Pattern COLUMN_3_HDR_LINUX_FMT = Pattern.compile(
+			"^\\s*(?<id>\\d+), \\s*(?<containingid>\\d+), (0x)?(?<start>[0-9a-fA-F]+), (0x)?(?<end>[0-9a-fA-F]+), (0x)?(?<entry>[0-9a-fA-F]+), (?<path>.+)$");
 
 	protected final String COLUMN_4_HDR_WIN = "Columns: id, containing_id, start, end, entry, offset, checksum, timestamp, path";
-	protected final Pattern COLUMN_4_HDR_WIN_FMT = null;
+	protected final Pattern COLUMN_4_HDR_WIN_FMT = Pattern.compile(
+			"^\\s*(?<id>\\d+), \\s*(?<containingid>\\d+), (0x)?(?<start>[0-9a-fA-F]+), (0x)?(?<end>[0-9a-fA-F]+), (0x)?(?<entry>[0-9a-fA-F]+), (0x)?(?<offset>[0-9a-fA-F]+), (0x)?(?<checksum>[0-9a-fA-F]+), (0x)?(?<timestamp>[0-9a-fA-F]+), (?<path>.+)$");
 
 	protected final String COLUMN_4_HDR_LINUX = "Columns: id, containing_id, start, end, entry, offset, path";
 	protected final Pattern COLUMN_4_HDR_LINUX_FMT = Pattern.compile(
 			"^\\s*(?<id>\\d+), \\s*(?<containingid>\\d+), (0x)?(?<start>[0-9a-fA-F]+), (0x)?(?<end>[0-9a-fA-F]+), (0x)?(?<entry>[0-9a-fA-F]+), (0x)?(?<offset>[0-9a-fA-F]+), (?<path>.+)$");
+
+	protected final String COLUMN_5_HDR_WIN = "Columns: id, containing_id, start, end, entry, offset, preferred_base, checksum, timestamp, path";
+	protected final Pattern COLUMN_5_HDR_WIN_FMT = Pattern.compile(
+			"^\\s*(?<id>\\d+), \\s*(?<containingid>\\d+), (0x)?(?<start>[0-9a-fA-F]+), (0x)?(?<end>[0-9a-fA-F]+), (0x)?(?<entry>[0-9a-fA-F]+), (0x)?(?<offset>[0-9a-fA-F]+), (0x)?(?<preferredbase>[0-9a-fA-F]+), (0x)?(?<checksum>[0-9a-fA-F]+), (0x)?(?<timestamp>[0-9a-fA-F]+), (?<path>.+)$");
+
+	protected final String COLUMN_5_HDR_LINUX = "Columns: id, containing_id, start, end, entry, offset, preferred_base, path";
+	protected final Pattern COLUMN_5_HDR_LINUX_FMT = Pattern.compile(
+			"^\\s*(?<id>\\d+), \\s*(?<containingid>\\d+), (0x)?(?<start>[0-9a-fA-F]+), (0x)?(?<end>[0-9a-fA-F]+), (0x)?(?<entry>[0-9a-fA-F]+), (0x)?(?<offset>[0-9a-fA-F]+), (0x)?(?<preferredbase>[0-9a-fA-F]+), (?<path>.+)$");
 
 	protected final Pattern NULL_CHECKSUM = Pattern.compile("0+");
 
@@ -71,6 +82,8 @@ public class ModuleReader {
 		formats.add(new ModuleTriplet(3, COLUMN_3_HDR_LINUX, COLUMN_3_HDR_LINUX_FMT, true, false));
 		formats.add(new ModuleTriplet(4, COLUMN_4_HDR_WIN, COLUMN_4_HDR_WIN_FMT, true, true));
 		formats.add(new ModuleTriplet(4, COLUMN_4_HDR_LINUX, COLUMN_4_HDR_LINUX_FMT, true, false));
+		formats.add(new ModuleTriplet(5, COLUMN_5_HDR_WIN, COLUMN_5_HDR_WIN_FMT, true, true));
+		formats.add(new ModuleTriplet(5, COLUMN_5_HDR_LINUX, COLUMN_5_HDR_LINUX_FMT, true, false));
 
 		readColumnHeader();
 
