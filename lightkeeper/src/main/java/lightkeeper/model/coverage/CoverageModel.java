@@ -56,7 +56,7 @@ public class CoverageModel extends AbstractCoverageModel<DynamoRioFile, AddressS
 		var api = plugin.getApi();
 		var programFileName = api.getCurrentProgram().getName();
 		var selectedModules = file.getModules().stream()
-				.filter(m -> new File(m.getPath()).getName().trim().equals(programFileName))
+				.filter(m -> new File(m.getPath()).getName().trim().equalsIgnoreCase(programFileName))
 				.collect(Collectors.toList());
 		if (selectedModules.isEmpty()) {
 			addMessage(String.format("Found %d modules", file.getModules().size()));
@@ -112,11 +112,12 @@ public class CoverageModel extends AbstractCoverageModel<DynamoRioFile, AddressS
 				var selectedModules = getSelectedModules(file);
 
 				var misMatch = selectedModules.stream().filter(m -> m.getChecksum() != null)
+						.filter(m -> m.getChecksum().length() == md5.length())
 						.filter(m -> !m.getChecksum().equalsIgnoreCase(md5)).findFirst();
 				if (misMatch.isPresent()) {
 					var module = misMatch.get();
-					throw new IOException(String.format("Module entry '%s' has invalid checksum '%s'", module.getPath(),
-							module.getChecksum()));
+					addErrorMessage(String.format("Warning: module '%s' has checksum '%s' but loaded binary has MD5 '%s' - coverage may be inaccurate",
+							module.getPath(), module.getChecksum(), md5));
 				}
 
 				Set<Integer> ids = this.getSelectedModuleIds(selectedModules);
